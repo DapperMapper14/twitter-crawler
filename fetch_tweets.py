@@ -15,9 +15,13 @@ with open('tweets.json', 'a') as json_file:
 		# insert code here to fetch tweets
 		if tweets:
 			for tweet in tweets:
-				json_tweet = tweet._json # convert to JSON format
-				# Write the tweet to tweets.json
-				json.dump(json_tweet,json_file)
-				json_file.write('\n')
+					json_tweet = tweet._json # convert to JSON format
+					# Write the tweet to tweets.json
+					if json_tweet['id'] in results:
+						continue
+					else:
+						results.append(json_tweet['id'])
+						json.dump(json_tweet,json_file)
+						json_file.write('\n')
 		else:
 			break
