@@ -6,7 +6,10 @@ G=nx.Graph()
 names=[]
 with open('tweets.json') as tfile:
 	for line in tfile:
-		data.append(json.loads(line))
+		try:
+			data.append(json.loads(line))
+		except:
+			continue
 # generate user list and add nodes
 for d in data:
 	name=d['user']['name']
