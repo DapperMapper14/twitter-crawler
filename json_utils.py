@@ -1,6 +1,6 @@
 import json
 
-def filterHashtag(in_json, out_json, keyword)
+def filterHashtag(in_json, out_json, keyword):
     # Load in empty data file to store clean data
     with open(out_json, "w") as json_outfile:
         # Load in original march madness file and loop over records
@@ -20,7 +20,7 @@ def filterHashtag(in_json, out_json, keyword)
     print "Added all entries that matched keyword: {0}".format(keyword)
     return None
 
-def removeDuplicates(in_json, out_json, unique_id)
+def removeDuplicates(in_json, out_json, unique_id):
     with open("march-madness-final.json", "w") as nf:
         # Load in original march madness file and loop over records
         with open("march-madness-combo.json") as f:
@@ -36,8 +36,6 @@ def removeDuplicates(in_json, out_json, unique_id)
     print "Removed all duplicates containing the same {0}".format(unique_id)
     return None
             
-print "Complete"
-
 def joinJSON (jsonFile1, jsonFile2, outFile):
     # load json objects to dictionaries
     with open(jsonFile1) as f1:
@@ -53,3 +51,21 @@ def joinJSON (jsonFile1, jsonFile2, outFile):
             nf.write('\n')
     print "Joined JSON file written to {0}".format(outFile)
     return None
+
+def formatJSON(in_json, out_json, ind=2):
+    # Load in empty data file to store clean data
+    with open(out_json, "w") as json_outfile:
+        # Load in original march madness file and loop over records
+        with open(in_json) as tFile:
+            for t in tFile:
+                try:
+                    tweet = json.loads(t)
+                    json.dump(tweet, json_outfile, indent = ind)
+                    json_outfile.write('\n')
+                except: 
+                    continue
+    return None
+
+in_json="twitter-data/march-madness.json"
+out_json="twitter-data/delete.json"
+format_json(in_json, out_json)

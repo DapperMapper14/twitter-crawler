@@ -17,7 +17,6 @@ def most_important(G, centralityMeasure="betweenness", cutoff=3):
 		ranking = nx.degree_centrality(G).items()
 	else:
 		raise "Invalid centrality measure. str type of 'betweenness', 'closeness', or 'degree'"
-
 	r = [x[1] for x in ranking]
 	m = sum(r)/len(r) # mean centrality
 	t = m*cutoff # threshold, we keep only the nodes with 3 times the mean

@@ -39,3 +39,35 @@ def twitter_graph(twitterJSON, G=nx.Graph()):
 		except KeyError:
 			continue
 	return G
+
+def make_attr_dict1(twitterJSON, attr_list):
+	d={}
+	with open(twitterJSON) as tfile:
+		for line in tfile: #loop over each entry in json
+			try:
+				py_obj=json.loads(line)
+				name=py_obj["user"]["name"]
+			except:
+				continue
+			for a in attr_list:
+				try:
+					d[name] = py_obj[a]
+				except:
+					continue
+	return d
+
+def make_attr_dict2(twitterJSON, attr_list):
+	d={}
+	with open(twitterJSON) as tfile:
+		for line in tfile: #loop over each entry in json
+			try:
+				py_obj=json.loads(line)
+				name=py_obj["user"]["name"]
+			except:
+				continue
+			for a in attr_list:
+				try:
+					d[name] = py_obj[a[0]][a[1]]
+				except:
+					continue
+	return d
