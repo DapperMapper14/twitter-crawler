@@ -5,8 +5,7 @@ import graph_stats as gs
 import build_nw as bn
 import matplotlib.pyplot as plt
 
-
-jsonFile = "twitter-data/nunes.json"
+jsonFile = "twitter-data/march-madness.json"
 G = bn.twitter_graph(jsonFile)
 date = bn.make_attr_dict1(jsonFile, "created_at")
 for d in date.items():
@@ -28,21 +27,34 @@ def active_time_series(G):
 	date_list = [max_date - dt.timedelta(hours=x) for x in range(0, diff)][::-1]
 
 	# Loop over dates and the graph to count "active" nodes
+	nodes = float(nx.number_of_nodes(G))
 	count_nodes=[]
 	for date in date_list:
 		active_nodes=[]
 		for (n, data) in G.nodes(data=True):
-			if date > data["date"]:
-				G.node[n]["active"]=True
-				active_nodes.append(n)
-			else:
+			try:
+				if date > data["date"]:
+					G.node[n]["active"]=True
+					active_nodes.append(n)
+				else:
+					continue
+			except:
 				continue
-		count_nodes.append(len(active_nodes))
-
+		perc = float(len(active_nodes))/nodes
+		count_nodes.append(perc)
 	time_series = pd.DataFrame({"date": date_list,"count": count_nodes})
 	return time_series
 
 ts = active_time_series(G)
+
+# MATPLOTLIB
+ts.plot()
+plt.title("#Samsung Activation Timeseries")
+plt.xlabel("Days After Initial Tweet")
+plt.ylabel("Fraction of Activated Users")
+plt.grid(True)
+plt.show()
+
 # Create multiple dictionaries for setting node attributes
 #nx.set_node_attributes(G, "date", date)
 #rt = bn.make_attr_dict1(jsonFile, "retweet_count")
