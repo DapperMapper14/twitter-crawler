@@ -5,12 +5,24 @@ import graph_stats as gs
 import build_nw as bn
 import matplotlib.pyplot as plt
 
-jsonFile = "twitter-data/march-madness.json"
+# Path name for the JSON file
+jsonFile = "twitter-data/american-healthcare.json"
+
+# Create the twitter graph
 G = bn.twitter_graph(jsonFile)
+
+# Assign 'date' attribute to the network and convert to date-time format
 date = bn.make_attr_dict1(jsonFile, "created_at")
 for d in date.items():
 	date[d[0]] = dt.datetime.strptime(d[1], "%a %b %d %H:%M:%S +0000 %Y")
 nx.set_node_attributes(G, "date", date)
+
+# Select largest subcomponent within graph
+Gc = max(nx.connected_component_subgraphs(G), key=len)
+
+# Trim down graph to most important nodes based on centrality
+Gt = gs.most_important(Gc, "betweenness", 3)
+
 
 def active_time_series(G):
 	# Set an "active" value to attribute dictionary
@@ -45,14 +57,20 @@ def active_time_series(G):
 	time_series = pd.DataFrame({"date": date_list,"count": count_nodes})
 	return time_series
 
-ts = active_time_series(G)
+tsG = active_time_series(G)
+tsGt = active_time_series(Gt)
 
 # MATPLOTLIB
-ts.plot()
-plt.title("#Samsung Activation Timeseries")
-plt.xlabel("Days After Initial Tweet")
+styles1 = ['bs-','ro-','y^-']
+styles2 = ['rs-','go-','b^-']
+fig, ax = plt.subplots()
+tsG.plot(style=styles1, ax=ax)
+tsGt.plot(style=styles2, ax=ax)
+plt.title("#AmericanHealthcare Activation Time Series")
+plt.xlabel("Hours After Initial Tweet")
 plt.ylabel("Fraction of Activated Users")
 plt.grid(True)
+ax.legend_.remove()
 plt.show()
 
 # Create multiple dictionaries for setting node attributes
@@ -75,20 +93,14 @@ plt.show()
 #for a in attr_list:
 #	nx.set_node_attributes(G, a[0], a[1])
 
-# Select largest subcomponent within graph
-#Gc = max(nx.connected_component_subgraphs(G), key=len)
-
-# Trim down graph to most important nodes based on centrality
-#Gt = gs.most_important(Gc, "betweenness", 3)
-
 # Create the layout
-#pos = nx.spring_layout(Gc)
+pos = nx.spring_layout(Gc)
 # draw the nodes and the edges (all)
-#nx.draw_networkx_nodes(Gc,pos,node_color='b',alpha=0.2,node_size=8)
-#nx.draw_networkx_edges(Gc,pos,alpha=0.1)
+nx.draw_networkx_nodes(Gc,pos,node_color='b',alpha=0.2,node_size=8)
+nx.draw_networkx_edges(Gc,pos,alpha=0.1)
 
 # draw the most important nprint json.loads(line)["created_at"]odes with a different style
-#nx.draw_networkx_nodes(Gt,pos,node_color='r',alpha=0.4,node_size=254)
+nx.draw_networkx_nodes(Gt,pos,node_color='r',alpha=0.4,node_size=254)
 # also the labels this time
-#nx.draw_networkx_labels(Gt,pos,font_size=12,font_color='b')
-#plt.show()
+nx.draw_networkx_labels(Gt,pos,font_size=12,font_color='b')
+plt.show()
